@@ -1,0 +1,6 @@
+node_modules
+# Keep environment variables out of version control
+*.DS_Store
+node_modules
+.env
+db
