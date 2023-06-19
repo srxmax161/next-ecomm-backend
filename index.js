@@ -3,10 +3,45 @@ import prisma from "./src/utils/prisma.js"
 import {Prisma} from '@prisma/client'
 import bcrypt from "bcryptjs" 
 import { signAccessToken } from "./src/utils/jwt.js"
+import cors from "cors"
+
+
+const app = express()
+const port = process.env.PORT || 8080
+
+app.use(express.json())
+app.use(cors())
 
 function filter(obj, ...keys) {
   return keys.reduce((a, c) => ({ ...a, [c]: obj[c]}), {})
 }
+
+function validateUser(input) {
+  const validationErrors = {}
+
+  if (!('name' in input) || input['name'].length == 0) {
+    validationErrors['name'] = 'cannot be blank'
+  }
+
+  if (!('email' in input) || input['email'].length == 0) {
+    validationErrors['email'] = 'cannot be blank'
+  }
+
+  if (!('password' in input) || input['password'].length == 0) {
+    validationErrors['password'] = 'cannot be blank'
+  }
+
+  if ('password' in input && input['password'].length < 8) {
+    validationErrors['password'] = 'should be at least 8 characters'
+  }
+
+  if ('email' in input && !input['email'].match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
+    validationErrors['email'] = 'is invalid'
+  }
+
+  return validationErrors
+}
+
 
 function validateLogin(input) {
   const validationErrors = {}
@@ -26,9 +61,6 @@ function validateLogin(input) {
   return validationErrors
 }
 
-const app = express()
-const port = process.env.PORT || 8080
-app.use(express.json())
 
 
 
@@ -38,7 +70,7 @@ app.get('/', async (req, res) => {
   res.json(allUsers)
 })
 
-app.post('/users', async (req, res) => {
+app.post('/sign-up', async (req, res) => {
   const data = req.body
 
   const validationErrors = validateUser(data)
