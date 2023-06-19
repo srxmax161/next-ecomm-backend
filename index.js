@@ -3,18 +3,14 @@ import prisma from "./src/utils/prisma.js"
 import {Prisma} from '@prisma/client'
 import bcrypt from "bcryptjs" 
 import { signAccessToken } from "./src/utils/jwt.js"
+import { filter } from "./src/utils/common.js"
 import cors from "cors"
-
 
 const app = express()
 const port = process.env.PORT || 8080
 
 app.use(express.json())
 app.use(cors())
-
-function filter(obj, ...keys) {
-  return keys.reduce((a, c) => ({ ...a, [c]: obj[c]}), {})
-}
 
 function validateUser(input) {
   const validationErrors = {}
@@ -60,10 +56,6 @@ function validateLogin(input) {
 
   return validationErrors
 }
-
-
-
-
 
 app.get('/', async (req, res) => {
   const allUsers = await prisma.user.findMany()
@@ -124,10 +116,11 @@ app.post('/sign-in', async (req, res) => {
     error: 'Email address or password not valid'
   })
 
-  const accessToken = await signAccessToken(user)
+  const accessToken = await signAccessToken(user)  
   return res.json({ accessToken })
 })
 
 app.listen(port, () => {
   console.log(`App started; listening on port ${port}`)
 })
+
