@@ -3,7 +3,7 @@
         {
             "previewLimit": 50,
             "server": "localhost",
-            "port": 5432,
+            "port": 5443,
             "driver": "PostgreSQL",
             "username": "next",
             "password": "next",
