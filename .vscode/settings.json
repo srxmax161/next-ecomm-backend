@@ -1,14 +1,3 @@
 {
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5443,
-            "driver": "PostgreSQL",
-            "username": "next",
-            "password": "next",
-            "database": "next-ecomm",
-            "name": "fullstack"
-        }
-    ]
+    "sqltools.connections": []
 }
