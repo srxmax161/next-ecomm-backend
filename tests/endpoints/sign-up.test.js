@@ -11,7 +11,7 @@ async function cleanupDatabase() {
   );
 }
 
-describe("POST /sign-up", () => {
+describe("POST /users", () => {
   const user = {
     name: "John",
     email: "john@example.com",
@@ -28,7 +28,7 @@ describe("POST /sign-up", () => {
 
   it("with valid data should return 200", async () => {
     const response = await request(app)
-      .post("/sign-up")
+      .post("/users")
       .send(user)
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(200);
@@ -40,7 +40,7 @@ describe("POST /sign-up", () => {
 
   it("with same email should fail", async () => {
     const response = await request(app)
-      .post("/sign-up")
+      .post("/users")
       .send(user)
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(500);
@@ -52,7 +52,7 @@ describe("POST /sign-up", () => {
     user.email = "unique@example.com";
     user.password = "short";
     const response = await request(app)
-      .post("/sign-up")
+      .post("/users")
       .send(user)
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(400);
@@ -66,7 +66,7 @@ describe("POST /sign-up", () => {
   it("with invalid email should fail", async () => {
     user.email = "_com_";
     const response = await request(app)
-      .post("/sign-up")
+      .post("/users")
       .send(user)
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(400);
@@ -77,7 +77,7 @@ describe("POST /sign-up", () => {
   it("with name is blank", async () => {
     user.name = "";
     const response = await request(app)
-      .post("/sign-up")
+      .post("/users")
       .send(user)
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(400);
