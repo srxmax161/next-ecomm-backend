@@ -11,7 +11,7 @@ async function cleanupDatabase() {
   );
 }
 
-describe("POST /sign-in", () => {
+describe("POST /auth", () => {
     const user = {
       name: "John",
       email: "john@example.com",
@@ -26,24 +26,19 @@ describe("POST /sign-in", () => {
       await cleanupDatabase();
     });
 
-it("with access token being returned", async () => {
-    const user = {
-      name: "John",
-      email: "john@example.com",
-      password: "insecure",
-    };
-    await request(app)
-      .post("/sign-up")
-      .send(user)
-      .set("Accept", "application/json");
-
-    const response = await request(app)
-      .post("/sign-in")
-      .send(user)
-      .set("Accept", "application/json");
-    expect(response.statusCode).toBe(200);
-    expect(response.body.accessToken).toBeDefined();
-  });
+    it("with access token being returned", async () => {
+      await request(app)
+        .post("/users")  
+        .send(user)
+        .set("Accept", "application/json");
+  
+      const response = await request(app)
+        .post("/auth")
+        .send(user)
+        .set("Accept", "application/json");
+      expect(response.statusCode).toBe(200);
+      expect(response.body.accessToken).toBeDefined();
+    });
 
   it("with wrong email", async() =>{
     const user = {
@@ -52,7 +47,7 @@ it("with access token being returned", async () => {
         password: "insecure",
     }
     await request(app)
-    .post("/sign-up")
+    .post("/users")
     .send(user)
     .set("Accept", "application/json")
 
@@ -61,7 +56,7 @@ it("with access token being returned", async () => {
         password: "insecure" 
     }
     const response = await request(app)
-    .post("/sign-in")
+    .post("/auth")
     .send(testuser)
     .set("Accept", "application/json")
 
@@ -76,7 +71,7 @@ it("with access token being returned", async () => {
         password: "insecure",
     }
     await request(app)
-    .post("/sign-up")
+    .post("/users")
     .send(user)
     .set("Accept", "application/json")
 
@@ -85,7 +80,7 @@ it("with access token being returned", async () => {
         password: "insecures" 
     }
     const response = await request(app)
-    .post("/sign-in")
+    .post("/auth")
     .send(testuser)
     .set("Accept", "application/json")
 
