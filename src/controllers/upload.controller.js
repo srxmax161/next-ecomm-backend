@@ -24,13 +24,13 @@ router.post('/', auth, async (req, res) => {
 
     const imageData = {
         id: data.id,
-        file: data.file,
-        name: data.name,
-        price: data.price,
-        title: data.title,
+        name: data.name, 
+        file: data.file, 
         description: data.description,
+        price: data.price,
         created_at: data.created_at,
         userId: data.user.payload.id,
+        title: data.title,
     }
 
     try {
