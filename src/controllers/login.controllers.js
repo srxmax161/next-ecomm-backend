@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import prisma from "../utils/prisma.js"
 import { signAccessToken } from '../utils/jwt.js'
 import { validateLogin } from "../validators/login.js"
+import { filter } from "../utils/common.js"
 
 const router = express.Router()
 
@@ -29,9 +30,10 @@ router.post('/', async (req, res) => {
     if (!checkPassword) return res.status(401).send({
       error: 'Email address or password not valid'
     })
-  
-    const accessToken = await signAccessToken(user)  
-    return res.json({ accessToken })
+    
+    const filteredUser = filter( user,"id", "name", "email" )
+    const accessToken = await signAccessToken( filteredUser ) 
+    return res.json( {accessToken} )
   })
 
   export default router

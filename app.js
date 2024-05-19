@@ -1,12 +1,13 @@
-import express, { application } from "express"
+import express from "express"
 import loginrouter from "./src/controllers/login.controllers.js"
 import cors from "cors"
 import signuprouter from "./src/controllers/sign-up.controllers.js"
 import prisma from "./src/utils/prisma.js"
 import morgan from "morgan"
 import auth from "./src/middlewares/auth.js"
-import { PrismaClient } from "@prisma/client"
-
+import uploadrouter from "./src/controllers/upload.controller.js"
+import authRefreshController from "./src/controllers/auth-refresh.controller.js"
+import checkoutrouter from "./src/controllers/checkout.controller.js"
 
 const app = express()
 app.use(morgan('combined'))
@@ -15,9 +16,10 @@ app.use(cors())
 
 app.use("/users", signuprouter)
 app.use("/auth", loginrouter)
+app.use("/upload", uploadrouter)
+app.use("/auth-refresh", authRefreshController)
+app.use("/checkout", checkoutrouter)
 
-// app.use('/login', loginrouter)
-// app.use('/sign-up', signuprouter)
 app.get('/', async (req, res) => {
   const allUsers = await prisma.user.findMany()
   res.json(allUsers)
@@ -32,6 +34,8 @@ app.delete(`/delete/:id`, async (req, res) => {
     })
     res.json(post)
 })
+
+
 
 app.get('/protected', auth, (req, res) => {
     res.json({ "hello": "world" })

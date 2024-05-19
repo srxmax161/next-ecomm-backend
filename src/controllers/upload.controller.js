@@ -1,58 +1,57 @@
-import  express  from "express";
+import express from "express";
 import prisma from "../utils/prisma.js";
 import auth from "../middlewares/auth.js";
-import { validateImage } from "../validators/upload.js";
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   const allImages = await prisma.image.findMany();
   res.json(allImages);
 });
 
-router.post('/', auth, async (req, res) => {
-  const data = req.body;
-
-  const validationErrors = validateImage(data);
-
-
-  if (Object.keys(validationErrors).length !== 0) {
-    return res.status(400).send({
-      error: validationErrors,
-    });
-  }
-
-    const imageData = {
-        id: data.id,
-        name: data.name, 
-        file: data.file, 
-        description: data.description,
-        price: data.price,
-        created_at: data.created_at,
-        userId: data.user.payload.id,
-        title: data.title,
-    }
-
-    try {
-    const image = await prisma.image.create({
-        data: imageData,
-    });
-    return res.json(image)
-    } catch (err) {
-        return res.status(500).send({error: "Failed to create image"})
-    }
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const image = await prisma.image.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+  res.json(image);
 });
 
-router.delete('/:id', auth, async (req, res) => {
-    const image = await prisma.image.findUnique({
-        where: {
-            id: req.params.id,
-        }
-    })
+router.post("/", auth, async (req, res) => {
+  const databody = req.body;
+  const dataID = req.user.payload.id;
+  const data = { ...databody, userId: dataID }; 
 
-    if (req.user.id != image.userId) {
-        return res.status(401).send({"error": "Unauthorized"})
-    }
-})
+  prisma.image.create({ 
+    data,})
+    .then((image) => {
+      return res.json(image);
+    });
+});
+
+router.delete("/:id", auth, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const image = await prisma.image.findUnique({
+    where: { 
+      id: id, 
+    },
+  });
+
+  if (req.user.payload.id != image.userId) {
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+
+  await prisma.image
+    .delete({
+      where: {
+        id: id,
+      },
+    })
+    .then((image) => {
+      return res.json(image);
+    });
+});
 
 export default router;

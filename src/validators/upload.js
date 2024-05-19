@@ -4,9 +4,9 @@ export function validateImage(data){
         validationErrors.title = 'Title is required'
     }
 
-    if(!data.file || typeof data.file !== 'string'){
-        validationErrors.file = 'Image is required'
-    }
+    // if(!data.file || typeof data.file !== 'string'){
+    //     validationErrors.file = 'Image is required'
+    // }
     
     return validationErrors
 }
